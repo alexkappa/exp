@@ -2,7 +2,7 @@ package tree
 
 type Eq struct{ Key, Value string }
 
-func (eq Eq) Eval(p map[string]string) bool {
+func (eq Eq) Eval(p Params) bool {
 	if val, found := p[eq.Key]; found {
 		return val == eq.Value
 	}
@@ -11,7 +11,7 @@ func (eq Eq) Eval(p map[string]string) bool {
 
 type Gt struct{ Key, Value string }
 
-func (gt Gt) Eval(p map[string]string) bool {
+func (gt Gt) Eval(p Params) bool {
 	if val, found := p[gt.Key]; found {
 		return val > gt.Value
 	}
@@ -20,7 +20,7 @@ func (gt Gt) Eval(p map[string]string) bool {
 
 type Lt struct{ Key, Value string }
 
-func (lt Lt) Eval(p map[string]string) bool {
+func (lt Lt) Eval(p Params) bool {
 	if val, found := p[lt.Key]; found {
 		return val < lt.Value
 	}

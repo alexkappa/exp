@@ -2,7 +2,7 @@ package tree
 
 import "testing"
 
-var p = map[string]string{
+var p = Params{
 	"foo": "bar",
 	"bar": "baz",
 }
