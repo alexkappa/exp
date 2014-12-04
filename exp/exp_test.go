@@ -1,4 +1,4 @@
-package tree
+package exp
 
 import (
 	"fmt"
@@ -6,16 +6,15 @@ import (
 )
 
 func Example() {
-	for _, exp := range []Exp{
-		And(Eq("foo", "23"), Not(False)),
-		Or(False, Eq("foo", "23")),
-		Not(False),
-	} {
-		fmt.Printf("%t\n", exp.Eval(p))
-	}
+	conjunction := And(True, True, True)
+	disjunction := Or(True, False)
+	negation := Not(False)
+
+	complex := Or(And(conjunction, disjunction), negation)
+
+	fmt.Printf("%t\n", complex.Eval(p))
+
 	// Output: true
-	// true
-	// true
 }
 
 func TestTrue(t *testing.T) {

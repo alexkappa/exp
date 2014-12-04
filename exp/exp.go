@@ -1,4 +1,7 @@
-package tree
+// Package exp implements a binary expression tree which can be used to evaluate
+// arbitrary binary expressions. You can use this package to build your own
+// expressions however a few expressions are provided out of the box.
+package exp
 
 import (
 	"strconv"
@@ -6,16 +9,24 @@ import (
 	"time"
 )
 
-// The Node interface represents a tree node. There are several implementations
-// of the interface in this package, but one may define custom Node's as long as
+// The Exp interface represents a tree node. There are several implementations
+// of the interface in this package, but one may define custom Exp's as long as
 // they implement the Eval function.
 type Exp interface {
-	Eval(p Params) bool
+	Eval(Params) bool
 }
 
-// Params defines the interface needed by Node in order to be able to validate
+// Params defines the interface needed by Exp in order to be able to validate
 // conditions. An example implementation of this interface would be
-// net/url.Values.
+// https://golang.org/pkg/net/url/#Values.
+//
+// A simple implementation of Params can be described as a map of strings.
+//
+// 	type Params map[string]string
+//
+// 	func (p Params) Get(s string) string {
+// 		return p[s]
+// 	}
 type Params interface {
 	Get(string) string
 }
@@ -54,17 +65,11 @@ func (n expNot) Eval(p Params) bool {
 	return !n.elem.Eval(p)
 }
 
-// True ------------------------------------------------------------------------
+// True / False ----------------------------------------------------------------
 
-type expTrue struct{}
+type expBool bool
 
-func (t expTrue) Eval(p Params) bool { return true }
-
-// False -----------------------------------------------------------------------
-
-type expFalse struct{}
-
-func (f expFalse) Eval(p Params) bool { return false }
+func (b expBool) Eval(p Params) bool { return bool(b) }
 
 // Eq --------------------------------------------------------------------------
 
@@ -194,6 +199,8 @@ var dateFormat = "2006-01-02"
 func DateFormat(f string) { dateFormat = f }
 
 var (
-	True  = expTrue{}  // True is an expression that always evaluates to true.
-	False = expFalse{} // False is an expression that always evaluates to false.
+	// True is an expression that always evaluates to true.
+	True expBool = true
+	// False is an expression that always evaluates to false.
+	False expBool = false
 )

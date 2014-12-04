@@ -1,70 +1,27 @@
-# tree
+# Binary Expression Tree
 
-Binary Expression Tree
+Package exp implements a binary expression tree which can be used to evaluate
+arbitrary binary expressions. You can use this package to build your own
+expressions however a few expressions are provided out of the box.
+
+## Installation
 
 ```
-$ go get go.alxkp.co/tree.v0
+$ go get github.com/alexkappa/go-exp/exp
 ```
 
-### Boolean
+## Usage
 
-```go
-package main
+```
+conjunction := And(True, True, True)
+disjunction := Or(True, False)
+negation := Not(False)
 
-import _ "go.alxkp.co/tree.v0"
+complex := Or(And(conjunction, disjunction), negation)
 
-func main() {
-    and := And{True{}, True{}}
-    and.Eval(nil) // true
-
-    or := Or{True{}, False{}}
-    or.Eval(nil) // true
-
-    tree := Or{And{True{}, True{}}, Or{True{}, False{}}}
-    tree.Eval(nil) // true
-}
+fmt.Printf("%t\n", complex.Eval(p)) // true
 ```
 
-### Algebraic
+## Documentation
 
-```go
-func main() {
-    eq := Eq{"foo", "bar"}
-    eq.Eval(Params{"foo": "bar"}) // true
-    eq.Eval(Params{"bar": "baz"}) // false
-}
-```
-
-### Combined
-
-```go
-func main() {
-    // true if foo=bar and bar=baz
-    tree := And{Eq{"foo", "bar"}, Eq{"bar", "baz"}}
-    tree.Eval(Params{"foo": "bar", "bar": "baz"}) // true
-}
-```
-
-### Custom Node
-
-```go
-import "strings"
-
-type Like struct {
-    Key, Value string
-}
-
-func (l Like) Eval(p Params) bool {
-    if val, found := p[l.Key]; found {
-        return strings.Contains(val, l.Value)
-    }
-    return false
-}
-
-func main() {
-    l := Like{"foo", "bar"}
-    if !l.Eval(Params{"foo": "barracuda"}) {
-        t.Error("the value of foo (barracuda) should contain bar")
-    }
-}
-```
+API documentation is available at [godoc](https://godoc.org/github.com/alexkappa/go-exp/exp).
