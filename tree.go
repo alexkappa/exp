@@ -9,7 +9,7 @@ import (
 // The Node interface represents a tree node. There are several implementations
 // of the interface in this package, but one may define custom Node's as long as
 // they implement the Eval function.
-type Node interface {
+type Exp interface {
 	Eval(p Params) bool
 }
 
@@ -22,7 +22,7 @@ type Params interface {
 
 // And -------------------------------------------------------------------------
 
-type expAnd struct{ elems []Node }
+type expAnd struct{ elems []Exp }
 
 func (a expAnd) Eval(p Params) bool {
 	for _, elem := range a.elems {
@@ -35,7 +35,7 @@ func (a expAnd) Eval(p Params) bool {
 
 // Or --------------------------------------------------------------------------
 
-type expOr struct{ elems []Node }
+type expOr struct{ elems []Exp }
 
 func (o expOr) Eval(p Params) bool {
 	for _, elem := range o.elems {
@@ -48,7 +48,7 @@ func (o expOr) Eval(p Params) bool {
 
 // Not -------------------------------------------------------------------------
 
-type expNot struct{ elem Node }
+type expNot struct{ elem Exp }
 
 func (n expNot) Eval(p Params) bool {
 	return !n.elem.Eval(p)
@@ -135,57 +135,57 @@ func (a expAfter) Eval(p Params) bool {
 // Public API ------------------------------------------------------------------
 
 // And evaluates to true if all t's are true.
-func And(t ...Node) Node { return expAnd{t} }
+func And(t ...Exp) Exp { return expAnd{t} }
 
 // Or evaluates to true if any t's are true.
-func Or(t ...Node) Node { return expOr{t} }
+func Or(t ...Exp) Exp { return expOr{t} }
 
 // Not evaluates to the opposite of t.
-func Not(t Node) Node { return expNot{t} }
+func Not(t Exp) Exp { return expNot{t} }
 
 // Equals is an expression that evaluates to true if the evaluated key is equal
 // in value to v.
-func Equals(k, v string) Node { return expEq{k, v} }
+func Equals(k, v string) Exp { return expEq{k, v} }
 
 // GreaterThan is an expression that evaluates to true if the evaluated key is
 // greater in value than v. The value is parsed as float before performing the
 // comparison.
-func GreaterThan(k, v string) Node { return expGt{k, v} }
+func GreaterThan(k, v string) Exp { return expGt{k, v} }
 
 // LessThan is an expression that evaluates to true if the evaluated key is less
 // in value than v. The value is parsed as float before performing the
 // comparison.
-func LessThan(k, v string) Node { return expLt{k, v} }
+func LessThan(k, v string) Exp { return expLt{k, v} }
 
 // Like is an expression that evaluates to true if v is contained within the
 // value of the evaluated key.
-func Like(k, v string) Node { return expLike{k, v} }
+func Like(k, v string) Exp { return expLike{k, v} }
 
 // Before is an expression that evaluates to true if v is a date before the
 // evaluated date. The value is parsed to a time.Time before comparing.
-func Before(k, v string) Node { return expBefore{k, v} }
+func Before(k, v string) Exp { return expBefore{k, v} }
 
 // After is an expression that evaluates to true if v is a date after the
 // evaluated date. The value is parsed to a time.Time before comparing.
-func After(k, v string) Node { return expAfter{k, v} }
+func After(k, v string) Exp { return expAfter{k, v} }
 
 // Eq is an alias for Equals.
-func Eq(k, v string) Node { return Equals(k, v) }
+func Eq(k, v string) Exp { return Equals(k, v) }
 
 // Neq is a shorthand for Not(Eq(k, v)).
-func Neq(k, v string) Node { return Not(Eq(k, v)) }
+func Neq(k, v string) Exp { return Not(Eq(k, v)) }
 
 // Gt is an alias for GreaterThan.
-func Gt(k, v string) Node { return GreaterThan(k, v) }
+func Gt(k, v string) Exp { return GreaterThan(k, v) }
 
 // Lt is an alias for LessThan.
-func Lt(k, v string) Node { return LessThan(k, v) }
+func Lt(k, v string) Exp { return LessThan(k, v) }
 
 // Gte is a shorthand for Or(Gt(k, v), Eq(k, v)).
-func Gte(k, v string) Node { return Or(Gt(k, v), Eq(k, v)) }
+func Gte(k, v string) Exp { return Or(Gt(k, v), Eq(k, v)) }
 
 // Lte is a shorthand for Lt(Gt(k, v), Eq(k, v)).
-func Lte(k, v string) Node { return Or(Lt(k, v), Eq(k, v)) }
+func Lte(k, v string) Exp { return Or(Lt(k, v), Eq(k, v)) }
 
 // The default format used to parse dates.
 var dateFormat = "2006-01-02"
@@ -193,8 +193,7 @@ var dateFormat = "2006-01-02"
 // DateFormat changes the date format used to parse dates.
 func DateFormat(f string) { dateFormat = f }
 
-// True is an expression that always evaluates to true.
-var True = expTrue{}
-
-// False is an expression that always evaluates to false.
-var False = expFalse{}
+var (
+	True  = expTrue{}  // True is an expression that always evaluates to true.
+	False = expFalse{} // False is an expression that always evaluates to false.
+)

@@ -1,6 +1,22 @@
 package tree
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
+
+func Example() {
+	for _, exp := range []Exp{
+		And(Eq("foo", "23"), Not(False)),
+		Or(False, Eq("foo", "23")),
+		Not(False),
+	} {
+		fmt.Printf("%t\n", exp.Eval(p))
+	}
+	// Output: true
+	// true
+	// true
+}
 
 func TestTrue(t *testing.T) {
 	if !True.Eval(nil) {
