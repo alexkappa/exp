@@ -1,31 +1,10 @@
 package exp
 
-import (
-	"fmt"
-	"testing"
-)
+import "testing"
 
-func Example() {
-	conjunction := And(True, True, True)
-	disjunction := Or(True, False)
-	negation := Not(False)
-
-	complex := Or(And(conjunction, disjunction), negation)
-
-	fmt.Printf("%t\n", complex.Eval(p))
-
-	// Output: true
-}
-
-func TestTrue(t *testing.T) {
-	if !True.Eval(nil) {
-		t.Error("T should evaluate to T")
-	}
-}
-
-func TestFalse(t *testing.T) {
-	if False.Eval(nil) {
-		t.Error("F should evaluate to F")
+func TestNotTrue(t *testing.T) {
+	if Not(True).Eval(nil) {
+		t.Error("NOT T should evaluate to F")
 	}
 }
 
@@ -54,35 +33,5 @@ func TestOrFalse(t *testing.T) {
 	exp := Or(False, False)
 	if exp.Eval(nil) {
 		t.Error("F OR F should evaluate to F")
-	}
-}
-
-type params map[string]string
-
-func (p params) Get(k string) string { return p[k] }
-
-var p = params{
-	"foo": "23",
-	"bar": "5",
-}
-
-func TestEq(t *testing.T) {
-	op := Eq("foo", "23")
-	if !op.Eval(p) {
-		t.Error("parameter foo should be equal to 23")
-	}
-}
-
-func TestGt(t *testing.T) {
-	op := Gt("bar", "4")
-	if !op.Eval(p) {
-		t.Error("parameter bar should be greater than 6")
-	}
-}
-
-func TestLt(t *testing.T) {
-	op := Lt("bar", "6")
-	if !op.Eval(p) {
-		t.Error("parameter bar should be less than 4")
 	}
 }
