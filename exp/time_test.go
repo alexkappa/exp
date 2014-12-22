@@ -34,9 +34,10 @@ func TestAfter(t *testing.T) {
 }
 
 func TestDateFormat(t *testing.T) {
-	DateFormat(time.ANSIC) // "02 Jan 06 15:04 MST"
+	prev := DateFormat(time.ANSIC) // "02 Jan 06 15:04 MST"
 	date := time.Date(2001, time.March, 2, 14, 0, 0, 0, time.UTC)
 	if On("ansic", date).Eval(d) {
 		t.Errorf("On(%q, %q) should evauate to true", d.Get("ansic"), date)
 	}
+	DateFormat(prev)
 }

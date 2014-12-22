@@ -70,7 +70,10 @@ func After(key string, date time.Time) Exp {
 // The default format used to parse dates.
 var dateFormat = "2006-01-02"
 
-// DateFormat changes the date format used to parse dates.
-func DateFormat(f string) {
+// DateFormat changes the date format used to parse dates and returnes the
+// previous format in case you need to revert back in the future.
+func DateFormat(f string) string {
+	var previous = dateFormat
 	dateFormat = f
+	return previous
 }

@@ -2,6 +2,22 @@ package exp
 
 import "strings"
 
+// Match
+
+type expMatch struct {
+	key, str string
+}
+
+func (e expMatch) Eval(p Params) bool {
+	return p.Get(e.key) == e.str
+}
+
+// Match is an expression that evaluates to true if str is equal to the value
+// pointed to by key.
+func Match(key, str string) Exp {
+	return expMatch{key, str}
+}
+
 // Contains
 
 type expContains struct {
