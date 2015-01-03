@@ -8,6 +8,29 @@ var m = Map{
 	"baz": "booyah",
 }
 
+func TestMatch(t *testing.T) {
+	for key, value := range map[string]string{
+		"foo": "bar",
+		"bar": "baz",
+		"baz": "booyah",
+	} {
+		if !Match(key, value).Eval(m) {
+			t.Errorf("Match(%q, %q) should evaluate to true", key, value)
+		}
+	}
+}
+
+func TestMatchAny(t *testing.T) {
+	for key, values := range map[string][]string{
+		"foo": {"bar", "zzz"},
+		"bar": {"zzz", "baz"},
+	} {
+		if !MatchAny(key, values...).Eval(m) {
+			t.Errorf("MatchAny(%q, %q) should evaluate to true", key, values)
+		}
+	}
+}
+
 func TestContains(t *testing.T) {
 	for key, substr := range map[string][]string{
 		"foo": {"ar", "ba", "bar"},

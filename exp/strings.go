@@ -18,6 +18,16 @@ func Match(key, str string) Exp {
 	return expMatch{key, str}
 }
 
+// MatchAny is an expression that evaluates to true if any of the strs are equal
+// to the value pointed to by key.
+func MatchAny(key string, strs ...string) Exp {
+	exp := make([]Exp, len(strs))
+	for i, str := range strs {
+		exp[i] = Match(key, str)
+	}
+	return Or(exp...)
+}
+
 // Contains
 
 type expContains struct {
