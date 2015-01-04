@@ -7,7 +7,7 @@ expressions however a few expressions are provided out of the box.
 ## Installation
 
 ```
-$ go get github.com/alexkappa/go-exp/exp
+$ go get github.com/alexkappa/exp
 ```
 
 ## Usage
@@ -24,4 +24,4 @@ fmt.Printf("%t\n", complex.Eval(p)) // true
 
 ## Documentation
 
-API documentation is available at [godoc](https://godoc.org/github.com/alexkappa/go-exp/exp).
+API documentation is available at [godoc](https://godoc.org/github.com/alexkappa/exp).
