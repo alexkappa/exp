@@ -61,10 +61,94 @@ func (a expAfter) Eval(p Params) bool {
 	return date.After(a.date)
 }
 
-// After is an expression that evaluates to true if v is a date after the
+// After is an expression that evaluates to true if date is a time after the
 // evaluated date. The value is parsed to a time.Time before comparing.
 func After(key string, date time.Time) Exp {
 	return expAfter{key, date}
+}
+
+// Weekday
+
+type expWeekday struct {
+	key     string
+	weekday time.Weekday
+}
+
+func (w expWeekday) Eval(p Params) bool {
+	date, err := time.Parse(dateFormat, p.Get(w.key))
+	if err != nil {
+		return false
+	}
+	return date.Weekday() == w.weekday
+}
+
+// Weekday is an expression that evaluates to true if the date pointed to by key
+// is on the specified weekday.
+func Weekday(key string, weekday time.Weekday) Exp {
+	return expWeekday{key, weekday}
+}
+
+// Day
+
+type expDay struct {
+	key string
+	day int
+}
+
+func (d expDay) Eval(p Params) bool {
+	date, err := time.Parse(dateFormat, p.Get(d.key))
+	if err != nil {
+		return false
+	}
+	return date.Day() == d.day
+}
+
+// Day is an expression that evaluates to true if the date pointed to by key is
+// on the specified day.
+func Day(key string, day int) Exp {
+	return expDay{key, day}
+}
+
+// Month
+
+type expMonth struct {
+	key   string
+	month time.Month
+}
+
+func (m expMonth) Eval(p Params) bool {
+	date, err := time.Parse(dateFormat, p.Get(m.key))
+	if err != nil {
+		return false
+	}
+	return date.Month() == m.month
+}
+
+// Month is an expression that evaluates to true if the date pointed to by key
+// is on the specified month.
+func Month(key string, month time.Month) Exp {
+	return expMonth{key, month}
+}
+
+// Year
+
+type expYear struct {
+	key  string
+	year int
+}
+
+func (y expYear) Eval(p Params) bool {
+	date, err := time.Parse(dateFormat, p.Get(y.key))
+	if err != nil {
+		return false
+	}
+	return date.Year() == y.year
+}
+
+// Month is an expression that evaluates to true if the date pointed to by key
+// is on the specified year.
+func Year(key string, year int) Exp {
+	return expYear{key, year}
 }
 
 // The default format used to parse dates.
