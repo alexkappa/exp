@@ -145,7 +145,7 @@ func (y expYear) Eval(p Params) bool {
 	return date.Year() == y.year
 }
 
-// Month is an expression that evaluates to true if the date pointed to by key
+// Year is an expression that evaluates to true if the date pointed to by key
 // is on the specified year.
 func Year(key string, year int) Exp {
 	return expYear{key, year}
