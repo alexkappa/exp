@@ -13,14 +13,6 @@ type Exp interface {
 // Params defines the interface needed by Exp in order to be able to validate
 // conditions. An example implementation of this interface would be
 // https://golang.org/pkg/net/url/#Values.
-//
-// A simple implementation of Params can be described as a map of strings.
-//
-// 	type Params map[string]string
-//
-// 	func (p Params) Get(s string) string {
-// 		return p[s]
-// 	}
 type Params interface {
 	Get(string) string
 }
