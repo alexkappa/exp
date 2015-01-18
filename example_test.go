@@ -14,7 +14,7 @@ func Example() {
 
 	complex := Or(And(conjunction, disjunction), negation)
 
-	fmt.Printf("%t\n", complex.Eval(p))
+	fmt.Printf("%t\n", complex.Eval(nil))
 
 	// Output: true
 }

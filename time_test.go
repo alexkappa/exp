@@ -13,9 +13,9 @@ var d = Map{
 }
 
 func TestOn(t *testing.T) {
-	date := time.Date(2014, time.December, 15, 0, 0, 0, 0, time.UTC)
-	if !On("present", date).Eval(d) {
-		t.Errorf("On(%q, %q) should evaluate to true", d.Get("present"), date)
+	today := time.Date(2014, time.December, 15, 0, 0, 0, 0, time.UTC)
+	if !On("present", today).Eval(d) {
+		t.Errorf("On(%q, %q) should evaluate to true", d.Get("present"), today)
 	}
 }
 
