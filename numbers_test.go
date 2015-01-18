@@ -25,7 +25,7 @@ func TestNumbers(t *testing.T) {
 		{Lte("foo", 24), true},
 	} {
 		if test.exp.Eval(p) != test.out {
-			t.Errorf("unexpected output %#v != %v", test.exp, test.out)
+			t.Errorf("%s should evaluate to %t.", test.exp, test.out)
 		}
 	}
 }

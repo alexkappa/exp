@@ -11,6 +11,13 @@ func (b Bool) Eval(p Params) bool {
 	return bool(b)
 }
 
+func (b Bool) String() string {
+	if bool(b) {
+		return "T"
+	}
+	return "F"
+}
+
 var (
 	// True is an expression that always evaluates to true.
 	True = Bool(true)

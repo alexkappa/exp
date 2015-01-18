@@ -38,6 +38,10 @@ func (a expAnd) Eval(p Params) bool {
 	return true
 }
 
+func (a expAnd) String() string {
+	return sprintf("(%s)", join(a.elems, "∧"))
+}
+
 // And evaluates to true if all t's are true.
 func And(t ...Exp) Exp {
 	return expAnd{t}
@@ -56,6 +60,10 @@ func (o expOr) Eval(p Params) bool {
 	return false
 }
 
+func (o expOr) String() string {
+	return sprintf("(%s)", join(o.elems, "∨"))
+}
+
 // Or evaluates to true if any t's are true.
 func Or(t ...Exp) Exp {
 	return expOr{t}
@@ -67,6 +75,10 @@ type expNot struct{ elem Exp }
 
 func (n expNot) Eval(p Params) bool {
 	return !n.elem.Eval(p)
+}
+
+func (n expNot) String() string {
+	return sprintf("¬%s", n.elem)
 }
 
 // Not evaluates to the opposite of t.

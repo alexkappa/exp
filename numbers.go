@@ -17,6 +17,10 @@ func (eq expEq) Eval(p Params) bool {
 	return value == eq.value
 }
 
+func (eq expEq) String() string {
+	return sprintf("[%s==%.2f]", eq.key, eq.value)
+}
+
 // Equal evaluates to true if the value pointed to by key is equal in value to
 // v. The value pointed to by k is parsed into a float64 before comparing. If a
 // parse error occurs false is returned.
@@ -54,6 +58,10 @@ func (gt expGt) Eval(p Params) bool {
 	return value > gt.value
 }
 
+func (gt expGt) String() string {
+	return sprintf("[%s>%.2f]", gt.key, gt.value)
+}
+
 // GreaterThan evaluates to true if the value pointed to by key is greater in
 // value than v. The value is parsed as float before performing the comparison.
 func GreaterThan(k string, v float64) Exp {
@@ -88,6 +96,10 @@ func (lt expLt) Eval(p Params) bool {
 		return false
 	}
 	return value < lt.value
+}
+
+func (lt expLt) String() string {
+	return sprintf("[%s<%.2f]", lt.key, lt.value)
 }
 
 // LessThan evaluates to true if the value pointed to by key is less in value

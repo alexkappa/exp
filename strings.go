@@ -12,6 +12,10 @@ func (e expMatch) Eval(p Params) bool {
 	return p.Get(e.key) == e.str
 }
 
+func (e expMatch) String() string {
+	return sprintf("[%s==%s]", e.key, e.str)
+}
+
 // Match is an expression that evaluates to true if str is equal to the value
 // pointed to by key.
 func Match(key, str string) Exp {
@@ -38,6 +42,10 @@ func (e expContains) Eval(p Params) bool {
 	return strings.Contains(p.Get(e.key), e.substr)
 }
 
+func (e expContains) String() string {
+	return sprintf("[%s∋%s]", e.key, e.substr)
+}
+
 // Contains is an expression that evaluates to true if substr is within the
 // value pointed to by key.
 func Contains(key, substr string) Exp {
@@ -52,6 +60,10 @@ type expContainsAny struct {
 
 func (e expContainsAny) Eval(p Params) bool {
 	return strings.ContainsAny(p.Get(e.key), e.chars)
+}
+
+func (e expContainsAny) String() string {
+	return sprintf("[%s∋%s]", e.key, e.chars)
 }
 
 // ContainsAny evaluates to true if any Unicode code points in chars are within
@@ -71,6 +83,10 @@ func (e expContainsRune) Eval(p Params) bool {
 	return strings.ContainsRune(p.Get(e.key), e.r)
 }
 
+func (e expContainsRune) String() string {
+	return sprintf("[%s∋%c]", e.key, e.r)
+}
+
 // ContainsRune evaluates to true if the Unicode code point r is within the
 // value pointed to by key.
 func ContainsRune(key string, r rune) Exp {
@@ -86,6 +102,10 @@ type expLen struct {
 
 func (e expLen) Eval(p Params) bool {
 	return len(p.Get(e.key)) == e.length
+}
+
+func (e expLen) String() string {
+	return sprintf("[len(%s)==%d]", e.key, e.length)
 }
 
 // Len evalates to true if the length of the string pointed to by key is equal
@@ -105,6 +125,10 @@ func (e expCount) Eval(p Params) bool {
 	return strings.Count(p.Get(e.key), e.sep) == e.count
 }
 
+func (e expCount) String() string {
+	return sprintf("[count(%s,%s)==%d]", e.key, e.sep, e.count)
+}
+
 // Count evaluates to true if the number of non-overlapping instances of sep in
 // the value pointed to by key is equal to count.
 func Count(key, sep string, count int) Exp {
@@ -119,6 +143,10 @@ type expEqualFold struct {
 
 func (e expEqualFold) Eval(p Params) bool {
 	return strings.EqualFold(p.Get(e.key), e.s)
+}
+
+func (e expEqualFold) String() string {
+	return sprintf("[%s≈%s]", e.key, e.s)
 }
 
 // EqualFold evaluates to true if the value pointed to by key and s, interpreted
