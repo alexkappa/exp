@@ -18,12 +18,20 @@ func (e expMatch) String() string {
 
 // Match is an expression that evaluates to true if str is equal to the value
 // pointed to by key.
+//
+// 	m := Map{"foo": "bar"}
+// 	Match("foo", "bar").Eval(m) // true
+// 	Match("foo", "baz").Eval(m) // false
 func Match(key, str string) Exp {
 	return expMatch{key, str}
 }
 
 // MatchAny is an expression that evaluates to true if any of the strs are equal
 // to the value pointed to by key.
+//
+// 	m := Map{"foo": "bar"}
+// 	MatchAny("foo", "bar", "baz", "cux").Eval(m) // true
+// 	MatchAny("foo", "baf", "baz", "lux").Eval(m) // false
 func MatchAny(key string, strs ...string) Exp {
 	exp := make([]Exp, len(strs))
 	for i, str := range strs {
@@ -131,6 +139,15 @@ func (e expCount) String() string {
 
 // Count evaluates to true if the number of non-overlapping instances of sep in
 // the value pointed to by key is equal to count.
+//
+// 	m := Map{
+// 		"foo": "bar",
+// 		"bar": "zoo"
+// 	}
+// 	Count("foo", "b", 1).Eval(m) // true
+// 	Count("foo", "a", 1).Eval(m) // true
+// 	Count("foo", "r", 1).Eval(m) // true
+// 	Count("bar", "o", 2).Eval(m) // true
 func Count(key, sep string, count int) Exp {
 	return expCount{key, sep, count}
 }
@@ -151,6 +168,13 @@ func (e expEqualFold) String() string {
 
 // EqualFold evaluates to true if the value pointed to by key and s, interpreted
 // as UTF-8 strings, are equal under Unicode case-folding.
+//
+// 	m := Map{
+// 		"foo": "Bar",
+// 		"bar": "BaZ"
+// 	}
+// 	EqualFold("foo", "bar").Eval(m) // true
+// 	EqualFold("bar", "baz").Eval(m) // true
 func EqualFold(key, s string) Exp {
 	return expEqualFold{key, s}
 }
