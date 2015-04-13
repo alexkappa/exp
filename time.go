@@ -42,6 +42,13 @@ func (b expBefore) Eval(p Params) bool {
 // Before evaluates to true if date is before the date pointed to by key. The
 // value is parsed to a time.Time before comparing. In case of a parse error
 // false is returned.
+//
+// 	m := Map{
+// 		"past":   "1995-01-01",
+// 		"future": "2045-01-01",
+// 	}
+// 	Before("past", time.Now()).Eval(m) // true
+// 	Before("future", time.Now()).Eval(m) // false
 func Before(key string, date time.Time) Exp {
 	return expBefore{key, date}
 }
