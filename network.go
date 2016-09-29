@@ -5,21 +5,21 @@ import "net"
 // Conatins IP
 
 type expContainsIp struct {
-	key, str string
+	cidr, ip string
 }
 
 func (e expContainsIp) Eval(p Params) bool {
-	_, cidrnet, err := net.ParseCIDR(p.Get(e.key))
+	_, cidrnet, err := net.ParseCIDR(p.Get(e.cidr))
 	if err != nil {
 		return false
 	}
-	testIp := net.ParseIP(e.str)
+	testIp := net.ParseIP(e.ip)
 
 	return cidrnet.Contains(testIp)
 }
 
 func (e expContainsIp) String() string {
-	return sprintf("[%s∋%s]", e.key, e.str)
+	return sprintf("[%s∋%s]", e.cidr, e.ip)
 }
 
 // Contains is an expression that evaluates to true if substr falls within the cidr range
