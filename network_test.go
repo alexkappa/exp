@@ -1,7 +1,7 @@
 package exp
 
 import (
-    "testing"
+	"testing"
 )
 
 var ipMap = Map{

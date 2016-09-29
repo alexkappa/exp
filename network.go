@@ -9,16 +9,14 @@ type expContainsIp struct {
 }
 
 func (e expContainsIp) Eval(p Params) bool {
-  _, cidrnet, err := net.ParseCIDR(p.Get(e.key))
-  if err != nil {
+	_, cidrnet, err := net.ParseCIDR(p.Get(e.key))
+	if err != nil {
 		return false
 	}
-  testIp := net.ParseIP(e.str)
-
+	testIp := net.ParseIP(e.str)
 
 	return cidrnet.Contains(testIp)
 }
-
 
 func (e expContainsIp) String() string {
 	return sprintf("[%s∋%s]", e.key, e.str)
@@ -31,6 +29,6 @@ func (e expContainsIp) String() string {
 // 192.168.1.1 and 	192.168.1.254
 //
 // 192.168.1.0/32 will only match 192.168.1.0
-func ContainsIp(key, substr string) Exp {
-	return expContainsIp{key, substr}
+func ContainsIp(cidr, ip string) Exp {
+	return expContainsIp{cidr, ip}
 }
