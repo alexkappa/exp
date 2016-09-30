@@ -1,19 +1,30 @@
 package exp
 
 import (
+	"net"
 	"testing"
 )
 
 var ipMap = Map{
-	"src_ip": "192.168.1.0/24",
+	"ip1": "192.168.1.32",
+	"ip2": "192.168.2.64",
 }
 
-func TestContainsIp(t *testing.T) {
-	for key, value := range map[string]string{
-		"src_ip": "192.168.1.61",
+func TestContainsIP(t *testing.T) {
+	_, cidr, err := net.ParseCIDR("192.168.1.0/24")
+	if err != nil {
+		t.Error(err)
+	}
+
+	for _, test := range []struct {
+		exp Exp
+		out bool
+	}{
+		{ContainsIP("ip1", cidr), true},
+		{ContainsIP("ip2", cidr), false},
 	} {
-		if !ContainsIp(key, value).Eval(ipMap) {
-			t.Errorf("Match(%q, %q) should evaluate to true", key, value)
+		if test.exp.Eval(ipMap) != test.out {
+			t.Errorf("%s should evaluate to %t.", test.exp, test.out)
 		}
 	}
 }

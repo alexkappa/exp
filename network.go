@@ -4,31 +4,34 @@ import "net"
 
 // Conatins IP
 
-type expContainsIp struct {
-	cidr, ip string
+type expContainsIP struct {
+	key  string
+	cidr *net.IPNet
 }
 
-func (e expContainsIp) Eval(p Params) bool {
-	_, cidrnet, err := net.ParseCIDR(p.Get(e.cidr))
-	if err != nil {
-		return false
-	}
-	testIp := net.ParseIP(e.ip)
-
-	return cidrnet.Contains(testIp)
+func (e expContainsIP) Eval(p Params) bool {
+	return e.cidr.Contains(net.ParseIP(p.Get(e.key)))
 }
 
-func (e expContainsIp) String() string {
-	return sprintf("[%s∋%s]", e.cidr, e.ip)
+func (e expContainsIP) String() string {
+	return sprintf("[%s∋%s]", e.key, e.cidr)
 }
 
-// Contains is an expression that evaluates to true if substr falls within the cidr range
-// given example:
+// ContainsIP is an expression that evaluates to true if an ip falls within the
+// CIDR range pointed to by key.
 //
-// 192.168.1.0/24 will match all IPs that fall between
-// 192.168.1.1 and 	192.168.1.254
+// 	m := Map{
+// 		"ip": "192.168.1.1",
+// 		"ip2": "192.168.32.128",
+// 	}
 //
-// 192.168.1.0/32 will only match 192.168.1.0
-func ContainsIp(cidr, ip string) Exp {
-	return expContainsIp{cidr, ip}
+// 	_, cidr, err := net.ParseCIDR("192.168.1.0/24")
+// 	if err != nil {
+// 		// handle err
+// 	}
+//
+// 	ContainsIP("ip1", cidr).Eval(m) // true
+// 	ContainsIP("ip2", cidr).Eval(m) // false
+func ContainsIP(key string, cidr *net.IPNet) Exp {
+	return expContainsIP{key, cidr}
 }
