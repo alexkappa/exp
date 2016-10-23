@@ -45,6 +45,14 @@ func TestLexer(t *testing.T) {
 				{Type: T_EOF},
 			},
 		},
+		{
+			`!true`,
+			[]token{
+				{Type: T_LOGICAL_NOT, Value: "!"},
+				{Type: T_BOOLEAN, Value: "true"},
+				{Type: T_EOF},
+			},
+		},
 	} {
 		var tokens []token
 		lexer := newLexer(test.exp)

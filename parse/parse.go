@@ -5,12 +5,14 @@ package parse
 import (
 	"fmt"
 	"io"
+
+	"github.com/alexkappa/exp"
 )
 
 type parser struct {
 	lexer *lexer
 	buf   []token
-	ast   Exp
+	ast   exp.Exp
 }
 
 // read returns the next token from the lexer and advances the cursor. This
@@ -25,14 +27,14 @@ func (p *parser) read() token {
 }
 
 // readn returns the next n tokens from the lexer and advances the cursor. If it
-// coundn't read all n tokens, for example if a tokenEOF was returned by the
+// coundn't read all n tokens, for example if a T_EOF was returned by the
 // lexer, an error is returned and the returned slice will have all tokens read
-// until that point, including tokenEOF.
+// until that point, including T_EOF.
 func (p *parser) readn(n int) ([]token, error) {
 	tokens := make([]token, 0, n) // make a slice capable of storing up to n tokens
 	for i := 0; i < n; i++ {
 		tokens = append(tokens, p.read())
-		if tokens[i].typ == tokenEOF {
+		if tokens[i].Type == T_EOF {
 			return tokens, io.EOF
 		}
 	}
@@ -40,15 +42,15 @@ func (p *parser) readn(n int) ([]token, error) {
 }
 
 // readt returns the tokens starting from the current position until the first
-// match of t. Similar to readn it will return an error if a tokenEOF was
+// match of t. Similar to readn it will return an error if a T_EOF was
 // returned by the lexer before a match was made.
 func (p *parser) readt(t tokenType) ([]token, error) {
 	var tokens []token
 	for {
 		token := p.read()
 		tokens = append(tokens, token)
-		switch token.typ {
-		case tokenEOF:
+		switch token.Type {
+		case T_EOF:
 			return tokens, io.EOF
 		case t:
 			return tokens, nil
@@ -79,7 +81,7 @@ func (p *parser) peekn(n int) ([]token, error) {
 	for i := len(p.buf) - 1; i < n; i++ {
 		t := p.lexer.token()
 		p.buf = append(p.buf, t)
-		if t.typ == tokenEOF {
+		if t.Type == T_EOF {
 			return p.buf, io.EOF
 		}
 	}
@@ -90,20 +92,20 @@ func (p *parser) peekn(n int) ([]token, error) {
 // t. it will not advance the cursor.
 func (p *parser) peekt(t tokenType) ([]token, error) {
 	for i := 0; i < len(p.buf); i++ {
-		switch p.buf[i].typ {
+		switch p.buf[i].Type {
 		case t:
 			return p.buf[:i], nil
-		case tokenEOF:
+		case T_EOF:
 			return p.buf[:i], io.EOF
 		}
 	}
 	for {
 		token := p.lexer.token()
 		p.buf = append(p.buf, token)
-		switch token.typ {
+		switch token.Type {
 		case t:
 			return p.buf, nil
-		case tokenEOF:
+		case T_EOF:
 			break
 		}
 	}
@@ -115,8 +117,8 @@ func (p *parser) errorf(t token, format string, v ...interface{}) error {
 }
 
 // parse begins parsing based on tokens read from the lexer.
-func (p *parser) parse() (Exp, error) {
-	var exp Exp
+func (p *parser) parse() (exp.Exp, error) {
+	var exp exp.Exp
 
 loop:
 	for {
@@ -127,26 +129,28 @@ loop:
 		case T_ERR:
 			return nil, p.errorf(token, "%s", token.Value)
 		case T_IDENTIFIER:
-
+			e, err := p.parseExp()
+			if err != nil {
+				return nil, err
+			}
+			exp = e
 		case T_LEFT_PAREN:
-			t, err := p.readt(T_RIGHT_PAREN)
+			e, err := p.parseParen()
 			if err != nil {
-				return nil, p.errorf(t[len(t)-1], "%s", token.Value)
+				return nil, err
 			}
-			p = subParser(t)
-			e, err := p.parse()
-			if err != nil {
-				return nil, p.errorf(t[len(t)-1], "%s", token.Value)
-			}
+			exp = e
 		}
 	}
+
+	return exp, nil
 
 	// 	var nodes []node
 	// loop:
 	// 	for {
 	// 		token := p.read()
-	// 		switch token.typ {
-	// 		case tokenEOF:
+	// 		switch token.Type {
+	// 		case T_EOF:
 	// 			break loop
 	// 		case tokenError:
 	// 			return nil, p.errorf(token, "%s", token.val)
@@ -168,7 +172,27 @@ loop:
 	// 			nodes = append(nodes, new(delimNode))
 	// 		}
 	// 	}
-	return exp, nil
+}
+
+func (p *parser) parseExp() (exp.Exp, error) {
+	_, err := p.readn(2)
+	if err != nil {
+		return nil, err
+	}
+	return nil, nil
+}
+
+func (p *parser) parseParen() (exp.Exp, error) {
+	t, err := p.readt(T_RIGHT_PAREN)
+	if err != nil {
+		return nil, p.errorf(t[len(t)-1], "%s", t[len(t)-1].Value)
+	}
+	s := subParser(t)
+	e, err := s.parse()
+	if err != nil {
+		return nil, err
+	}
+	return e, nil
 }
 
 // newParser creates a new parser using the suppliad lexer.

@@ -61,6 +61,7 @@ const (
 
 	T_NUMBER
 	T_STRING
+	T_BOOLEAN
 
 	T_LOGICAL_AND
 	T_LOGICAL_OR
@@ -83,6 +84,7 @@ var tokenName = map[tokenType]string{
 	T_IDENTIFIER:          "T_IDENTIFIER",
 	T_NUMBER:              "T_NUMBER",
 	T_STRING:              "T_STRING",
+	T_BOOLEAN:             "T_BOOLEAN",
 	T_LOGICAL_AND:         "T_LOGICAL_AND",
 	T_LOGICAL_OR:          "T_LOGICAL_OR",
 	T_LOGICAL_NOT:         "T_LOGICAL_NOT",
@@ -237,16 +239,16 @@ start:
 	case isWhitespace(r):
 		l.ignore()
 		goto start
-	case isNum(r):
+	case isNumeric(r):
 		return stateNumber
 	case isAlphanum(r):
-		return stateIdent
+		return stateIdentifier
 	case isOperator(r):
-		return stateOp
+		return stateOperator
 	case r == '\'':
-		return stateSQuote
+		return stateSingleQuote
 	case r == '"':
-		return stateDQuote
+		return stateDoubleQuote
 	case r == '(':
 		l.emit(T_LEFT_PAREN)
 		goto start
@@ -267,8 +269,8 @@ func stateEnd(l *lexer) stateFn {
 	return nil
 }
 
-// stateIdent scans an indentifier from the input stream.
-func stateIdent(l *lexer) stateFn {
+// stateIdentifier scans an indentifier from the input stream.
+func stateIdentifier(l *lexer) stateFn {
 loop:
 	for {
 		switch r := l.next(); {
@@ -279,12 +281,18 @@ loop:
 	}
 
 	l.backup()
-	l.emit(T_IDENTIFIER)
+
+	switch l.buffer() {
+	case "true", "false":
+		l.emit(T_BOOLEAN)
+	default:
+		l.emit(T_IDENTIFIER)
+	}
 
 	return stateInit
 }
 
-func stateOp(l *lexer) stateFn {
+func stateOperator(l *lexer) stateFn {
 	r := l.next()
 	for isOperator(r) {
 		r = l.next()
@@ -316,7 +324,7 @@ func stateOp(l *lexer) stateFn {
 	return stateInit
 }
 
-func stateSQuote(l *lexer) stateFn {
+func stateSingleQuote(l *lexer) stateFn {
 	l.ignore()
 loop:
 	for {
@@ -335,7 +343,7 @@ loop:
 	return stateInit
 }
 
-func stateDQuote(l *lexer) stateFn {
+func stateDoubleQuote(l *lexer) stateFn {
 	l.ignore()
 loop:
 	for {
@@ -358,7 +366,7 @@ func stateNumber(l *lexer) stateFn {
 
 loop:
 	switch r := l.next(); {
-	case isNum(r) || r == '.':
+	case isNumeric(r) || r == '.':
 		goto loop
 	case r == eof:
 		break loop
@@ -380,8 +388,8 @@ func isWhitespace(r rune) bool {
 	return false
 }
 
-// isNum reports whether r is a digit.
-func isNum(r rune) bool {
+// isNumeric reports whether r is a digit.
+func isNumeric(r rune) bool {
 	return unicode.IsDigit(r)
 }
 
