@@ -5,14 +5,11 @@ package parse
 import (
 	"fmt"
 	"io"
-
-	"github.com/alexkappa/exp"
 )
 
 type parser struct {
 	lexer *lexer
 	buf   []token
-	ast   exp.Exp
 }
 
 // read returns the next token from the lexer and advances the cursor. This
@@ -112,87 +109,57 @@ func (p *parser) peekt(t tokenType) ([]token, error) {
 	return p.buf, io.EOF
 }
 
+// errorf creates a parsing error which describes the token currently being
+// processed as well as line and column numbers from the input stream.
 func (p *parser) errorf(t token, format string, v ...interface{}) error {
 	return fmt.Errorf("%d:%d syntax error: %s", t.line, t.col, fmt.Sprintf(format, v...))
 }
 
-// parse begins parsing based on tokens read from the lexer.
-func (p *parser) parse() (exp.Exp, error) {
-	var exp exp.Exp
+// parse requests tokens from the lexer and generates
+func (p *parser) parse() (*tree, error) {
+
+	tree := newTree()
+	node := tree
+
+	stack := newStack()
+	stack.push(tree)
+
+	var err error
 
 loop:
 	for {
 		token := p.read()
 		switch token.Type {
+		case T_LEFT_PAREN:
+			node.left = newTree()
+			stack.push(node)
+			node = node.left
+		case T_RIGHT_PAREN:
+			node, err = stack.pop()
+			if err != nil {
+				break loop
+			}
+		case T_LOGICAL_AND, T_LOGICAL_OR, T_LOGICAL_NOT, T_IS_EQUAL, T_IS_NOT_EQUAL, T_IS_GREATER, T_IS_GREATER_OR_EQUAL, T_IS_SMALLER, T_IS_SMALLER_OR_EQUAL:
+			node.value = token
+			node.right = newTree()
+			stack.push(node)
+			node = node.right
+		case T_IDENTIFIER, T_NUMBER, T_STRING, T_BOOLEAN:
+			node.value = token
+			node, err = stack.pop()
+			if err != nil {
+				break loop
+			}
 		case T_EOF:
 			break loop
 		case T_ERR:
 			return nil, p.errorf(token, "%s", token.Value)
-		case T_IDENTIFIER:
-			e, err := p.parseExp()
-			if err != nil {
-				return nil, err
-			}
-			exp = e
-		case T_LEFT_PAREN:
-			e, err := p.parseParen()
-			if err != nil {
-				return nil, err
-			}
-			exp = e
+		default:
+			return nil, p.errorf(token, "unknown token %s", token.Type)
 		}
 	}
 
-	return exp, nil
-
-	// 	var nodes []node
-	// loop:
-	// 	for {
-	// 		token := p.read()
-	// 		switch token.Type {
-	// 		case T_EOF:
-	// 			break loop
-	// 		case tokenError:
-	// 			return nil, p.errorf(token, "%s", token.val)
-	// 		case tokenText:
-	// 			nodes = append(nodes, textNode(token.val))
-	// 		case tokenLeftDelim:
-	// 			node, err := p.parseTag()
-	// 			if err != nil {
-	// 				return nodes, err
-	// 			}
-	// 			nodes = append(nodes, node)
-	// 		case tokenRawStart:
-	// 			node, err := p.parseRawTag()
-	// 			if err != nil {
-	// 				return nodes, err
-	// 			}
-	// 			nodes = append(nodes, node)
-	// 		case tokenSetDelim:
-	// 			nodes = append(nodes, new(delimNode))
-	// 		}
-	// 	}
-}
-
-func (p *parser) parseExp() (exp.Exp, error) {
-	_, err := p.readn(2)
-	if err != nil {
-		return nil, err
-	}
-	return nil, nil
-}
-
-func (p *parser) parseParen() (exp.Exp, error) {
-	t, err := p.readt(T_RIGHT_PAREN)
-	if err != nil {
-		return nil, p.errorf(t[len(t)-1], "%s", t[len(t)-1].Value)
-	}
-	s := subParser(t)
-	e, err := s.parse()
-	if err != nil {
-		return nil, err
-	}
-	return e, nil
+	return tree, err
 }
 
 // newParser creates a new parser using the suppliad lexer.
@@ -200,7 +167,9 @@ func newParser(l *lexer) *parser {
 	return &parser{lexer: l}
 }
 
-// subParser creates a new parser with a pre-defined token buffer.
-func subParser(b []token) *parser {
-	return &parser{buf: append(b, token{Type: T_EOF})}
+// Parse parses an expression in text format and returns the parse tree.
+func Parse(s string) (Tree, error) {
+	l := newLexer(s)
+	p := newParser(l)
+	return p.parse()
 }

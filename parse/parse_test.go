@@ -2,70 +2,50 @@
 
 package parse
 
-// import (
-// 	"reflect"
-// 	"testing"
-// )
-//
-// func TestParser(t *testing.T) {
-// 	for _, test := range []struct {
-// 		template string
-// 		expected []node
-// 	}{
-// 		{
-// 			"{{#foo}}\n\t{{#foo}}hello nested{{/foo}}{{/foo}}",
-// 			[]node{
-// 				&sectionNode{"foo", false, []node{
-// 					textNode("\n\t"),
-// 					&sectionNode{"foo", false, []node{
-// 						textNode("hello nested"),
-// 					}},
-// 				}},
-// 			},
-// 		},
-// 		{
-// 			"\nfoo {{bar}} {{#alex}}\r\n\tbaz\n{{/alex}} {{!foo}}",
-// 			[]node{
-// 				textNode("\nfoo "),
-// 				&varNode{"bar", true},
-// 				textNode(" "),
-// 				&sectionNode{"alex", false, []node{
-// 					textNode("\r\n\tbaz\n"),
-// 				}},
-// 				textNode(" "),
-// 				commentNode("foo"),
-// 			},
-// 		},
-// 		{
-// 			"this will{{^foo}}not{{/foo}} be rendered",
-// 			[]node{
-// 				textNode("this will"),
-// 				&sectionNode{"foo", true, []node{
-// 					textNode("not"),
-// 				}},
-// 				textNode(" be rendered"),
-// 			},
-// 		},
-// 		{
-// 			"{{#list}}({{.}}){{/list}}",
-// 			[]node{
-// 				&sectionNode{"list", false, []node{
-// 					textNode("("),
-// 					&varNode{".", true},
-// 					textNode(")"),
-// 				}},
-// 			},
-// 		},
-// 	} {
-// 		parser := newParser(newLexer(test.template, "{{", "}}"))
-// 		elems, err := parser.parse()
-// 		if err != nil {
-// 			t.Fatal(err)
-// 		}
-// 		for i, elem := range elems {
-// 			if !reflect.DeepEqual(elem, test.expected[i]) {
-// 				t.Errorf("elements are not equal %v != %v", elem, test.expected[i])
-// 			}
-// 		}
-// 	}
-// }
+import "testing"
+
+func TestParser(t *testing.T) {
+	for _, test := range []struct {
+		exp string
+		ast *tree
+	}{
+		{
+			"(foo > bar)",
+			&tree{
+				value: token{Type: T_IS_GREATER, Value: ">"},
+				left: &tree{
+					value: token{Type: T_IDENTIFIER, Value: "foo"},
+				},
+				right: &tree{
+					value: token{Type: T_IDENTIFIER, Value: "bar"},
+				},
+			},
+		},
+		{
+			"((foo > bar) && true)",
+			&tree{
+				value: token{Type: T_LOGICAL_AND, Value: "&&"},
+				left: &tree{
+					value: token{Type: T_IS_GREATER, Value: ">"},
+					left:  &tree{value: token{Type: T_IDENTIFIER, Value: "foo"}},
+					right: &tree{value: token{Type: T_IDENTIFIER, Value: "bar"}},
+				},
+				right: &tree{value: token{Type: T_BOOLEAN, Value: "true"}},
+			},
+		},
+		{
+			"(foo > bar)",
+			&tree{
+				value: token{Type: T_IS_GREATER, Value: ">"},
+				left:  &tree{value: token{Type: T_IDENTIFIER, Value: "foo"}},
+				right: &tree{value: token{Type: T_IDENTIFIER, Value: "bar"}},
+			},
+		},
+	} {
+		ast, err := newParser(newLexer(test.exp)).parse()
+		if err != nil {
+			t.Fatal(err)
+		}
+		assertEqual(t, test.ast, ast)
+	}
+}

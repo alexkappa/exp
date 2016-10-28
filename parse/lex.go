@@ -11,32 +11,6 @@ import (
 	"unicode/utf8"
 )
 
-// <expression> ::= <term> { <or> <term> }
-//
-// <term>       ::= <factor> { <and> <factor> }
-//
-// <factor>     ::= <comparison>
-//               |  <not> <factor>
-//               |  (<expression>)
-//
-// <comparison> ::= <identifier> <operator> <constant>
-//
-// <operator>   ::= <eq>
-//               |  <gt>
-//               |  <gte>
-//               |  <lt>
-//               |  <lte>
-//
-// <or>         ::= '||'
-// <and>        ::= '&&'
-// <not>        ::= '!'
-//
-// <eq>         ::= '=='
-// <gt>         ::= '>'
-// <gte>        ::= '=>'
-// <lt>         ::= '<'
-// <lte>        ::= '<='
-
 // token represents a token or text string returned from the scanner.
 type token struct {
 	Type  tokenType
@@ -269,7 +243,9 @@ func stateEnd(l *lexer) stateFn {
 	return nil
 }
 
-// stateIdentifier scans an indentifier from the input stream.
+// stateIdentifier scans an indentifier from the input stream. An identifier is
+// a variable which will be substituted with a concrete value during expression
+// evaluation.
 func stateIdentifier(l *lexer) stateFn {
 loop:
 	for {
@@ -292,6 +268,7 @@ loop:
 	return stateInit
 }
 
+// stateOperator scans an operator from the input stream.
 func stateOperator(l *lexer) stateFn {
 	r := l.next()
 	for isOperator(r) {
@@ -324,6 +301,8 @@ func stateOperator(l *lexer) stateFn {
 	return stateInit
 }
 
+// stateSingleQuote scans an identifier enclosed in single quotes from the input
+// stream.
 func stateSingleQuote(l *lexer) stateFn {
 	l.ignore()
 loop:
@@ -343,6 +322,8 @@ loop:
 	return stateInit
 }
 
+// stateDoubleQuote scans a string enclosed in double quotes from the input
+// stream.
 func stateDoubleQuote(l *lexer) stateFn {
 	l.ignore()
 loop:
@@ -362,18 +343,15 @@ loop:
 	return stateInit
 }
 
+// stateNumber scans a numeric value from the input stream.
 func stateNumber(l *lexer) stateFn {
-
 loop:
 	switch r := l.next(); {
 	case isNumeric(r) || r == '.':
 		goto loop
-	case r == eof:
-		break loop
-	default:
-		return l.errorf("unexpected character %#U", r)
 	}
 
+	l.backup()
 	l.emit(T_NUMBER)
 
 	return stateInit
