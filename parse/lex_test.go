@@ -2,10 +2,7 @@
 
 package parse
 
-import (
-	"reflect"
-	"testing"
-)
+import "testing"
 
 func TestLexer(t *testing.T) {
 	for _, test := range []struct {
@@ -67,14 +64,19 @@ func TestLexer(t *testing.T) {
 			}
 		}
 
-		// t.Logf("%v\n", tokens)
+		if len(tokens) != len(test.tokens) {
+			t.Errorf("unexpected token stream length.\n\twant: %s\n\thave: %s", len(test.tokens), len(tokens))
+		}
 
-		assertEqual(t, test.tokens, tokens)
-	}
-}
+		for i := 0; i < len(tokens); i++ {
 
-func assertEqual(t *testing.T, a, b interface{}) {
-	if !reflect.DeepEqual(a, b) {
-		t.Errorf("Failed asserting that items are equal.\n\twant: %s\n\thave: %s", a, b)
+			if tokens[i].Type != test.tokens[i].Type {
+				t.Errorf("unexpected token type.\n\twant: %s\n\thave: %s", test.tokens[i].Type, tokens[i].Type)
+			}
+
+			if tokens[i].Value != test.tokens[i].Value {
+				t.Errorf("unexpected token value.\n\twant: %s\n\thave: %s", test.tokens[i].Value, tokens[i].Value)
+			}
+		}
 	}
 }
