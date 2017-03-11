@@ -76,7 +76,7 @@ var tokenName = map[tokenType]string{
 func (i tokenType) String() string {
 	s := tokenName[i]
 	if s == "" {
-		return fmt.Sprintf("t_unknown_%d", int(i))
+		return fmt.Sprintf("T_UNKNOWN_%d", int(i))
 	}
 	return s
 }
