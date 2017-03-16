@@ -14,23 +14,36 @@ $ go get github.com/alexkappa/exp/...
 
 ## Usage
 
-```
+```Go
 import "github.com/alexkappa/exp"
 
 fmt.Printf("%t\n", exp.Or(exp.And(exp.True, exp.Or(exp.True, exp.False)), exp.Not(exp.False)).Eval(nil)) // true
 ```
 
-It is also possible to use text to describe expressions.
+It is also possible to use text to describe expressions. **Warning** this feature is not battle tested so use with caution.
 
-```
-import (
-	"github.com/alexkappa/exp"
-	"github.com/alexkappa/exp/parse"
-)
+```Go
+import "github.com/alexkappa/exp"
 
-exp, _ := parse.Parse(`(foo >= 100.00)`)
-exp.Eval(exp.Map{"foo": "150.00"}) // true
+x, err := exp.Parse(`(foo >= 100.00)`)
+if err != nil {
+	// handle error
+}
+x.Eval(exp.Map{"foo": "150.00"}) // true
 ```
+
+Currently only the following operators are supported.
+
+|Operator|Symbol|Data Type|
+|-|-|-|
+|`And`|`&&`||
+|`Or`|`||`||
+|`Equal`, `Eq`|`==`|`string`, `float64`|
+|`NotEqual`, `Neq`|`!=`|`string`, `float64`|
+|`GreaterThan `, `Gt`|`>`|`string`, `float64`|
+|`GreaterThanEqual `, `Gte`|`>=`|`string`, `float64`|
+|`LessThan `, `Lt`|`<`|`string`, `float64`|
+|`LessThanEqual `, `Lte`|`<=`|`string`, `float64`|
 
 ## Documentation
 
