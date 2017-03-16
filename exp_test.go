@@ -24,3 +24,28 @@ func TestExp(t *testing.T) {
 		}
 	}
 }
+
+func TestParse(t *testing.T) {
+	m := Map{
+		"foo": "124",
+		"bar": "x",
+		"b-z": "z",
+	}
+	for _, s := range []string{
+		`(foo == 124)`,
+		`(foo >= 123)`,
+		`(foo < 456)`,
+		`((foo > 200) || (bar == "x"))`,
+		`((foo > 100) && (bar == "x"))`,
+		`('b-z' == "z")`,
+	} {
+		exp, err := Parse(s)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !exp.Eval(m) {
+			t.Error("unexpected output")
+		}
+		t.Logf("%s", exp)
+	}
+}

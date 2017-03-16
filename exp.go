@@ -3,6 +3,13 @@
 // expressions however a few expressions are provided out of the box.
 package exp
 
+import (
+	"errors"
+	"strconv"
+
+	"github.com/alexkappa/exp/parse"
+)
+
 // The Exp interface represents a tree node. There are several implementations
 // of the interface in this package, but one may define custom Exp's as long as
 // they implement the Eval function.
@@ -23,6 +30,231 @@ type Map map[string]string
 // Get returns the value pointed to by key.
 func (m Map) Get(key string) string {
 	return m[key]
+}
+
+func Parse(s string) (Exp, error) {
+	t, err := parse.Parse(s)
+	if err != nil {
+		return nil, err
+	}
+	return visit(t)
+}
+
+func visit(t parse.Tree) (Exp, error) {
+	token := t.Value()
+	switch token.Type {
+	case parse.T_BOOLEAN:
+		switch token.Value {
+		case "true":
+			return True, nil
+		case "false":
+			return False, nil
+		}
+	case parse.T_LOGICAL_AND:
+		l, err := visit(t.Left())
+		if err != nil {
+			return nil, err
+		}
+		r, err := visit(t.Right())
+		if err != nil {
+			return nil, err
+		}
+		return And(l, r), nil
+	case parse.T_LOGICAL_OR:
+		l, err := visit(t.Left())
+		if err != nil {
+			return nil, err
+		}
+		r, err := visit(t.Right())
+		if err != nil {
+			return nil, err
+		}
+		return Or(l, r), nil
+	case parse.T_IS_EQUAL:
+		var (
+			k, v string
+			f    float64
+			l    = t.Left()
+			r    = t.Right()
+		)
+		switch l.Value().Type {
+		case parse.T_IDENTIFIER:
+			k = l.Value().Value
+		case parse.T_STRING:
+			v = l.Value().Value
+		case parse.T_NUMBER:
+			var err error
+			f, err = strconv.ParseFloat(l.Value().Value, 10)
+			if err != nil {
+				return nil, err
+			}
+		}
+		switch r.Value().Type {
+		case parse.T_IDENTIFIER:
+			k = r.Value().Value
+		case parse.T_STRING:
+			v = r.Value().Value
+		case parse.T_NUMBER:
+			var err error
+			f, err = strconv.ParseFloat(r.Value().Value, 10)
+			if err != nil {
+				return nil, err
+			}
+		}
+		if v == "" {
+			return Equal(k, f), nil
+		}
+		return Match(k, v), nil
+	case parse.T_IS_NOT_EQUAL:
+		var (
+			k, v string
+			f    float64
+			l    = t.Left()
+			r    = t.Right()
+		)
+		switch l.Value().Type {
+		case parse.T_IDENTIFIER:
+			k = l.Value().Value
+		case parse.T_STRING:
+			v = l.Value().Value
+		case parse.T_NUMBER:
+			var err error
+			f, err = strconv.ParseFloat(l.Value().Value, 10)
+			if err != nil {
+				return nil, err
+			}
+		}
+		switch r.Value().Type {
+		case parse.T_IDENTIFIER:
+			k = r.Value().Value
+		case parse.T_STRING:
+			v = r.Value().Value
+		case parse.T_NUMBER:
+			var err error
+			f, err = strconv.ParseFloat(r.Value().Value, 10)
+			if err != nil {
+				return nil, err
+			}
+		}
+		if v == "" {
+			return NotEqual(k, f), nil
+		}
+		return Not(Match(k, v)), nil
+	case parse.T_IS_GREATER:
+		var (
+			k string
+			v float64
+			l = t.Left()
+			r = t.Right()
+		)
+		switch l.Value().Type {
+		case parse.T_IDENTIFIER:
+			k = l.Value().Value
+		case parse.T_NUMBER:
+			var err error
+			v, err = strconv.ParseFloat(l.Value().Value, 10)
+			if err != nil {
+				return nil, err
+			}
+		}
+		switch r.Value().Type {
+		case parse.T_IDENTIFIER:
+			k = r.Value().Value
+		case parse.T_NUMBER:
+			var err error
+			v, err = strconv.ParseFloat(r.Value().Value, 10)
+			if err != nil {
+				return nil, err
+			}
+		}
+		return GreaterThan(k, v), nil
+	case parse.T_IS_GREATER_OR_EQUAL:
+		var (
+			k string
+			v float64
+			l = t.Left()
+			r = t.Right()
+		)
+		switch l.Value().Type {
+		case parse.T_IDENTIFIER:
+			k = l.Value().Value
+		case parse.T_NUMBER:
+			var err error
+			v, err = strconv.ParseFloat(l.Value().Value, 10)
+			if err != nil {
+				return nil, err
+			}
+		}
+		switch r.Value().Type {
+		case parse.T_IDENTIFIER:
+			k = r.Value().Value
+		case parse.T_NUMBER:
+			var err error
+			v, err = strconv.ParseFloat(r.Value().Value, 10)
+			if err != nil {
+				return nil, err
+			}
+		}
+		return GreaterOrEqual(k, v), nil
+	case parse.T_IS_SMALLER:
+		var (
+			k string
+			v float64
+			l = t.Left()
+			r = t.Right()
+		)
+		switch l.Value().Type {
+		case parse.T_IDENTIFIER:
+			k = l.Value().Value
+		case parse.T_NUMBER:
+			var err error
+			v, err = strconv.ParseFloat(l.Value().Value, 10)
+			if err != nil {
+				return nil, err
+			}
+		}
+		switch r.Value().Type {
+		case parse.T_IDENTIFIER:
+			k = r.Value().Value
+		case parse.T_NUMBER:
+			var err error
+			v, err = strconv.ParseFloat(r.Value().Value, 10)
+			if err != nil {
+				return nil, err
+			}
+		}
+		return LessThan(k, v), nil
+	case parse.T_IS_SMALLER_OR_EQUAL:
+		var (
+			k string
+			v float64
+			l = t.Left()
+			r = t.Right()
+		)
+		switch l.Value().Type {
+		case parse.T_IDENTIFIER:
+			k = l.Value().Value
+		case parse.T_NUMBER:
+			var err error
+			v, err = strconv.ParseFloat(l.Value().Value, 10)
+			if err != nil {
+				return nil, err
+			}
+		}
+		switch r.Value().Type {
+		case parse.T_IDENTIFIER:
+			k = r.Value().Value
+		case parse.T_NUMBER:
+			var err error
+			v, err = strconv.ParseFloat(r.Value().Value, 10)
+			if err != nil {
+				return nil, err
+			}
+		}
+		return LessOrEqual(k, v), nil
+	}
+
+	return nil, errors.New("invalid expression")
 }
 
 // And
