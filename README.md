@@ -37,7 +37,7 @@ Currently only the following operators are supported.
 |Operator|Symbol|Data Type|
 |-|-|-|
 |`And`|`&&`||
-|`Or`|`||`||
+|`Or`|<code>&#124;&#124;</code>||
 |`Equal`, `Eq`|`==`|`string`, `float64`|
 |`NotEqual`, `Neq`|`!=`|`string`, `float64`|
 |`GreaterThan `, `Gt`|`>`|`string`, `float64`|
