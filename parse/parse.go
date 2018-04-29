@@ -51,10 +51,20 @@ loop:
 				break loop
 			}
 		case T_LOGICAL_AND, T_LOGICAL_OR, T_LOGICAL_NOT, T_IS_EQUAL, T_IS_NOT_EQUAL, T_IS_GREATER, T_IS_GREATER_OR_EQUAL, T_IS_SMALLER, T_IS_SMALLER_OR_EQUAL:
-			node.value = token
-			node.right = newTree()
-			stack.push(node)
-			node = node.right
+			if node.value.Type != T_ERR {
+				//new root
+				tree = newTree()
+				tree.left = node
+				tree.right = newTree()
+				tree.value = token
+				stack.push(tree)
+				node = tree.right
+			} else {
+				node.value = token
+				node.right = newTree()
+				stack.push(node)
+				node = node.right
+			}
 		case T_IDENTIFIER, T_NUMBER, T_STRING, T_BOOLEAN:
 			node.value = token
 			node, err = stack.pop()
