@@ -52,7 +52,6 @@ loop:
 			}
 		case T_LOGICAL_AND, T_LOGICAL_OR, T_LOGICAL_NOT, T_IS_EQUAL, T_IS_NOT_EQUAL, T_IS_GREATER, T_IS_GREATER_OR_EQUAL, T_IS_SMALLER, T_IS_SMALLER_OR_EQUAL:
 			if node.value.Type != T_ERR {
-				//new root
 				tree = newTree()
 				tree.left = node
 				tree.right = newTree()
