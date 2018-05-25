@@ -20,5 +20,5 @@ func TestTree(t *testing.T) {
 	node.right = newTree()
 	node.right.value = token{Value: "r2"}
 
-	t.Logf("%s", tree)
+	t.Logf("%v", tree)
 }

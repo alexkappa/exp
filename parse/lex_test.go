@@ -65,7 +65,7 @@ func TestLexer(t *testing.T) {
 		}
 
 		if len(tokens) != len(test.tokens) {
-			t.Errorf("unexpected token stream length.\n\twant: %s\n\thave: %s", len(test.tokens), len(tokens))
+			t.Errorf("unexpected token stream length.\n\twant: %d\n\thave: %d", len(test.tokens), len(tokens))
 		}
 
 		for i := 0; i < len(tokens); i++ {
