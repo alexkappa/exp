@@ -2,7 +2,9 @@
 
 package parse
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestParser(t *testing.T) {
 	for _, test := range []struct {
@@ -47,29 +49,33 @@ func TestParser(t *testing.T) {
 			t.Fatal(err)
 		}
 
-		assertTreeEqual(t, test.ast, ast)
+		if !treeEquals(test.ast, ast) {
+			t.Fatalf("trees are not equal.\n\twant: %s\n\thave: %s", test.ast, ast)
+		}
 	}
 }
 
-func assertTreeEqual(t *testing.T, a, b *tree) {
-	t.Logf("\n\ta: %s\n\tb: %s", a, b)
+func treeEquals(a, b *tree) bool {
 
 	if a == nil && b == nil {
-		return
+		return true
 	}
 
 	if a == nil || b == nil {
-		t.Fatalf("unexpected nil tree.\n\twant: %s\n\thave: %s", a, b)
+		return false
 	}
 
 	if a.value.Type != b.value.Type {
-		t.Fatalf("unexpected tree value type.\n\twant: %s\n\thave: %s", a.value, b.value)
+		return false
 	}
 
 	if a.value.Value != b.value.Value {
-		t.Fatalf("unexpected tree value.\n\twant: %s\n\thave: %s", a.value.Value, b.value.Value)
+		return false
 	}
 
-	assertTreeEqual(t, a.left, b.left)
-	assertTreeEqual(t, a.right, b.right)
+	if !treeEquals(a.left, b.left) || !treeEquals(a.right, b.right) {
+		return false
+	}
+
+	return true
 }
