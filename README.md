@@ -38,12 +38,12 @@ Currently only the following operators are supported.
 |-|-|-|
 |`And`|`&&`||
 |`Or`|<code>&#124;&#124;</code>||
-|`Equal`, `Eq`|`==`|`string`, `float64`|
-|`NotEqual`, `Neq`|`!=`|`string`, `float64`|
-|`GreaterThan `, `Gt`|`>`|`string`, `float64`|
-|`GreaterThanEqual `, `Gte`|`>=`|`string`, `float64`|
-|`LessThan `, `Lt`|`<`|`string`, `float64`|
-|`LessThanEqual `, `Lte`|`<=`|`string`, `float64`|
+|`Equal`, `Eq`|`==`|`string`, `float64`, `RFC3339 timestamp`|
+|`NotEqual`, `Neq`|`!=`|`string`, `float64`, `RFC3339 timestamp`|
+|`GreaterThan `, `Gt`|`>`|`string`, `float64`, `RFC3339 timestamp`|
+|`GreaterThanEqual `, `Gte`|`>=`|`string`, `float64`, `RFC3339 timestamp`|
+|`LessThan `, `Lt`|`<`|`string`, `float64`, `RFC3339 timestamp`|
+|`LessThanEqual `, `Lte`|`<=`|`string`, `float64`, `RFC3339 timestamp`|
 
 ## Documentation
 

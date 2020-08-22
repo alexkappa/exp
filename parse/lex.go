@@ -7,6 +7,7 @@ import (
 	"bytes"
 	"fmt"
 	"strings"
+	"time"
 	"unicode"
 	"unicode/utf8"
 )
@@ -36,6 +37,7 @@ const (
 	T_NUMBER
 	T_STRING
 	T_BOOLEAN
+	T_TIMESTAMP
 
 	T_LOGICAL_AND
 	T_LOGICAL_OR
@@ -331,7 +333,11 @@ loop:
 		switch l.next() {
 		case '"':
 			l.backup()
-			l.emit(T_STRING)
+			if isTimestamp(l.buffer()) {
+				l.emit(T_TIMESTAMP)
+			} else {
+				l.emit(T_STRING)
+			}
 			l.next()
 			l.ignore()
 			break loop
@@ -379,4 +385,12 @@ func isAlphanum(r rune) bool {
 // isOperator reports whether r is one of the predefined operators.
 func isOperator(r rune) bool {
 	return r == '=' || r == '!' || r == '>' || r == '<' || r == '&' || r == '|'
+}
+
+// isTimestamp reports whether r is a Timestamp. Timestamp supports time.RFC3339
+func isTimestamp(r string) bool {
+	if _, err := time.Parse(time.RFC3339, r); err != nil {
+		return false
+	}
+	return true
 }

@@ -55,7 +55,7 @@ loop:
 			node.right = newTree()
 			stack.push(node)
 			node = node.right
-		case T_IDENTIFIER, T_NUMBER, T_STRING, T_BOOLEAN:
+		case T_IDENTIFIER, T_NUMBER, T_STRING, T_BOOLEAN, T_TIMESTAMP:
 			node.value = token
 			node, err = stack.pop()
 			if err != nil {

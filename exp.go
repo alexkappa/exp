@@ -88,6 +88,8 @@ func visit(t parse.Tree) (Exp, error) {
 			if err != nil {
 				return nil, err
 			}
+		case parse.T_TIMESTAMP:
+			v = l.Value().Value
 		}
 		switch r.Value().Type {
 		case parse.T_IDENTIFIER:
@@ -100,6 +102,8 @@ func visit(t parse.Tree) (Exp, error) {
 			if err != nil {
 				return nil, err
 			}
+		case parse.T_TIMESTAMP:
+			v = r.Value().Value
 		}
 		if v == "" {
 			return Equal(k, f), nil
@@ -123,6 +127,8 @@ func visit(t parse.Tree) (Exp, error) {
 			if err != nil {
 				return nil, err
 			}
+		case parse.T_TIMESTAMP:
+			v = l.Value().Value
 		}
 		switch r.Value().Type {
 		case parse.T_IDENTIFIER:
@@ -135,6 +141,8 @@ func visit(t parse.Tree) (Exp, error) {
 			if err != nil {
 				return nil, err
 			}
+		case parse.T_TIMESTAMP:
+			v = r.Value().Value
 		}
 		if v == "" {
 			return NotEqual(k, f), nil
@@ -142,7 +150,7 @@ func visit(t parse.Tree) (Exp, error) {
 		return Not(Match(k, v)), nil
 	case parse.T_IS_GREATER:
 		var (
-			k string
+			k, tm string
 			v float64
 			l = t.Left()
 			r = t.Right()
@@ -156,6 +164,8 @@ func visit(t parse.Tree) (Exp, error) {
 			if err != nil {
 				return nil, err
 			}
+		case parse.T_TIMESTAMP:
+			tm = l.Value().Value
 		}
 		switch r.Value().Type {
 		case parse.T_IDENTIFIER:
@@ -166,11 +176,16 @@ func visit(t parse.Tree) (Exp, error) {
 			if err != nil {
 				return nil, err
 			}
+		case parse.T_TIMESTAMP:
+			tm = r.Value().Value
+		}
+		if tm != "" {
+			return TimeGreaterThan(k, tm), nil
 		}
 		return GreaterThan(k, v), nil
 	case parse.T_IS_GREATER_OR_EQUAL:
 		var (
-			k string
+			k, tm string
 			v float64
 			l = t.Left()
 			r = t.Right()
@@ -184,6 +199,8 @@ func visit(t parse.Tree) (Exp, error) {
 			if err != nil {
 				return nil, err
 			}
+		case parse.T_TIMESTAMP:
+			tm = l.Value().Value
 		}
 		switch r.Value().Type {
 		case parse.T_IDENTIFIER:
@@ -194,11 +211,16 @@ func visit(t parse.Tree) (Exp, error) {
 			if err != nil {
 				return nil, err
 			}
+		case parse.T_TIMESTAMP:
+			tm = r.Value().Value
+		}
+		if tm != ""{
+			return TimeGreaterOrEqual(k, tm), nil
 		}
 		return GreaterOrEqual(k, v), nil
 	case parse.T_IS_SMALLER:
 		var (
-			k string
+			k, tm string
 			v float64
 			l = t.Left()
 			r = t.Right()
@@ -212,6 +234,8 @@ func visit(t parse.Tree) (Exp, error) {
 			if err != nil {
 				return nil, err
 			}
+		case parse.T_TIMESTAMP:
+			tm = l.Value().Value
 		}
 		switch r.Value().Type {
 		case parse.T_IDENTIFIER:
@@ -222,11 +246,16 @@ func visit(t parse.Tree) (Exp, error) {
 			if err != nil {
 				return nil, err
 			}
+		case parse.T_TIMESTAMP:
+			tm = r.Value().Value
+		}
+		if tm != "" {
+			return TimeLessThan(k, tm), nil
 		}
 		return LessThan(k, v), nil
 	case parse.T_IS_SMALLER_OR_EQUAL:
 		var (
-			k string
+			k , tm string
 			v float64
 			l = t.Left()
 			r = t.Right()
@@ -240,6 +269,8 @@ func visit(t parse.Tree) (Exp, error) {
 			if err != nil {
 				return nil, err
 			}
+		case parse.T_TIMESTAMP:
+			tm = l.Value().Value
 		}
 		switch r.Value().Type {
 		case parse.T_IDENTIFIER:
@@ -250,6 +281,11 @@ func visit(t parse.Tree) (Exp, error) {
 			if err != nil {
 				return nil, err
 			}
+		case parse.T_TIMESTAMP:
+			tm = r.Value().Value
+		}
+		if tm != ""{
+			return TimeLessOrEqual(k, tm), nil
 		}
 		return LessOrEqual(k, v), nil
 	}

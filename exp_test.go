@@ -49,3 +49,25 @@ func TestParse(t *testing.T) {
 		t.Logf("%s", exp)
 	}
 }
+
+func TestTimestampParse(t *testing.T) {
+	m := Map{
+		"timestamp": "2020-04-07T20:05:00+05:30",
+	}
+	for _, s := range []string{
+		`(timestamp == "2020-04-07T20:05:00+05:30")`,
+		`(timestamp > "2020-04-07T20:04:00+05:30")`,
+		`(timestamp < "2020-04-07T20:06:00+05:30")`,
+		`(timestamp <= "2020-04-07T20:05:00+05:30")`,
+		`(timestamp >= "2020-04-07T20:05:00+05:30")`,
+	} {
+		exp, err := Parse(s)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !exp.Eval(m) {
+			t.Error("unexpected output")
+		}
+		t.Logf("%s", exp)
+	}
+}
