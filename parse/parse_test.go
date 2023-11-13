@@ -12,6 +12,90 @@ func TestParser(t *testing.T) {
 		ast *tree
 	}{
 		{
+			"foo > bar",
+			&tree{
+				value: token{Type: T_IS_GREATER, Value: ">"},
+				left: &tree{
+					value: token{Type: T_IDENTIFIER, Value: "foo"},
+				},
+				right: &tree{
+					value: token{Type: T_IDENTIFIER, Value: "bar"},
+				},
+			},
+		},
+		{
+			"((f > 1) && (f < 3)) && ((b > 1) && (b < 3))",
+			&tree{
+				value: token{Type: T_LOGICAL_AND, Value: "&&"},
+				left: &tree{
+					value: token{Type: T_LOGICAL_AND, Value: "&&"},
+					left: &tree{
+						value: token{Type: T_IS_GREATER, Value: ">"},
+						left: &tree{
+							value: token{Type: T_IDENTIFIER, Value: "f"},
+						},
+						right: &tree{
+							value: token{Type: T_NUMBER, Value: "1"},
+						},
+					},
+					right: &tree{
+						value: token{Type: T_IS_SMALLER, Value: "<"},
+						left: &tree{
+							value: token{Type: T_IDENTIFIER, Value: "f"},
+						},
+						right: &tree{
+							value: token{Type: T_NUMBER, Value: "3"},
+						},
+					},
+				},
+				right: &tree{
+					value: token{Type: T_LOGICAL_AND, Value: "&&"},
+					left: &tree{
+						value: token{Type: T_IS_GREATER, Value: ">"},
+						left: &tree{
+							value: token{Type: T_IDENTIFIER, Value: "b"},
+						},
+						right: &tree{
+							value: token{Type: T_NUMBER, Value: "1"},
+						},
+					},
+					right: &tree{
+						value: token{Type: T_IS_SMALLER, Value: "<"},
+						left: &tree{
+							value: token{Type: T_IDENTIFIER, Value: "b"},
+						},
+						right: &tree{
+							value: token{Type: T_NUMBER, Value: "3"},
+						},
+					},
+				},
+			},
+		},
+		{
+			"((f > 1) && (f < 3))",
+			&tree{
+				value: token{Type: T_LOGICAL_AND, Value: "&&"},
+				left: &tree{
+					value: token{Type: T_IS_GREATER, Value: ">"},
+					left: &tree{
+						value: token{Type: T_IDENTIFIER, Value: "f"},
+					},
+					right: &tree{
+						value: token{Type: T_NUMBER, Value: "1"},
+					},
+				},
+				right: &tree{
+					value: token{Type: T_IS_SMALLER, Value: "<"},
+					left: &tree{
+						value: token{Type: T_IDENTIFIER, Value: "f"},
+					},
+					right: &tree{
+						value: token{Type: T_NUMBER, Value: "3"},
+					},
+				},
+			},
+		},
+		{
 			"(foo > bar)",
 			&tree{
 				value: token{Type: T_IS_GREATER, Value: ">"},
