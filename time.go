@@ -43,12 +43,12 @@ func (b expBefore) Eval(p Params) bool {
 // value is parsed to a time.Time before comparing. In case of a parse error
 // false is returned.
 //
-// 	m := Map{
-// 		"past":   "1995-01-01",
-// 		"future": "2045-01-01",
-// 	}
-// 	Before("past", time.Now()).Eval(m) // true
-// 	Before("future", time.Now()).Eval(m) // false
+//	m := Map{
+//		"past":   "1995-01-01",
+//		"future": "2045-01-01",
+//	}
+//	Before("past", time.Now()).Eval(m) // true
+//	Before("future", time.Now()).Eval(m) // false
 func Before(key string, date time.Time) Exp {
 	return expBefore{key, date}
 }
@@ -161,7 +161,7 @@ func Year(key string, year int) Exp {
 // The default format used to parse dates.
 var dateFormat = "2006-01-02"
 
-// DateFormat changes the date format used to parse dates and returnes the
+// DateFormat changes the date format used to parse dates and returns the
 // previous format in case you need to revert back in the future.
 func DateFormat(f string) string {
 	var previous = dateFormat
