@@ -8,7 +8,7 @@ import (
 var d = Map{
 	"past":    "1969-07-10",
 	"present": "2014-12-15",
-	"future":  "2022-03-09",
+	"future":  "2033-03-09",
 	"ansic":   "02 Mar 2001 14:00 UTC",
 }
 
@@ -73,7 +73,7 @@ func TestYear(t *testing.T) {
 	for key, year := range map[string]int{
 		"past":    1969,
 		"present": 2014,
-		"future":  2022,
+		"future":  2033,
 	} {
 		if !Year(key, year).Eval(d) {
 			t.Errorf("Year(%q, %d)", key, year)
