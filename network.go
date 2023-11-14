@@ -20,18 +20,18 @@ func (e expContainsIP) String() string {
 // ContainsIP is an expression that evaluates to true if an ip falls within the
 // CIDR range pointed to by key.
 //
-// 	m := Map{
-// 		"ip": "192.168.1.1",
-// 		"ip2": "192.168.32.128",
-// 	}
+//	m := Map{
+//		"ip1": "192.168.1.1",
+//		"ip2": "192.168.32.128",
+//	}
 //
-// 	_, cidr, err := net.ParseCIDR("192.168.1.0/24")
-// 	if err != nil {
-// 		// handle err
-// 	}
+//	_, cidr, err := net.ParseCIDR("192.168.1.0/24")
+//	if err != nil {
+//		// handle err
+//	}
 //
-// 	ContainsIP("ip1", cidr).Eval(m) // true
-// 	ContainsIP("ip2", cidr).Eval(m) // false
+//	ContainsIP("ip1", cidr).Eval(m) // true
+//	ContainsIP("ip2", cidr).Eval(m) // false
 func ContainsIP(key string, cidr *net.IPNet) Exp {
 	return expContainsIP{key, cidr}
 }
