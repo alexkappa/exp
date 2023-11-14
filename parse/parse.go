@@ -23,7 +23,7 @@ func (p *parser) read() token {
 // errorf creates a parsing error which describes the token currently being
 // processed as well as line and column numbers from the input stream.
 func (p *parser) errorf(t token, format string, v ...interface{}) error {
-	return fmt.Errorf("%d:%d syntax error: %s", t.line, t.col, fmt.Sprintf(format, v...))
+	return fmt.Errorf("%d:%d syntax error: %s", t.Line, t.Col, fmt.Sprintf(format, v...))
 }
 
 // parse requests tokens from the lexer and generates
@@ -64,7 +64,7 @@ loop:
 		case T_EOF:
 			break loop
 		case T_ERR:
-			return nil, p.errorf(token, "%s", token.Value)
+			return nil, p.errorf(token, "error %s", token.Value)
 		default:
 			return nil, p.errorf(token, "unknown token %s", token.Type)
 		}
@@ -73,7 +73,7 @@ loop:
 	return tree, err
 }
 
-// newParser creates a new parser using the suppliad lexer.
+// newParser creates a new parser using the supplied lexer.
 func newParser(l *lexer) *parser {
 	return &parser{lexer: l}
 }

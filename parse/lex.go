@@ -15,8 +15,8 @@ import (
 type token struct {
 	Type  tokenType
 	Value string
-	line  int
-	col   int
+	Line  int
+	Col   int
 }
 
 // String satisfies the fmt.Stringer interface making it easier to print tokens.
@@ -28,7 +28,9 @@ func (i token) String() string {
 type tokenType int
 
 const (
-	T_ERR tokenType = iota
+	T_UNKNOWN tokenType = iota
+
+	T_ERR
 	T_EOF
 
 	T_IDENTIFIER
@@ -53,6 +55,7 @@ const (
 )
 
 var tokenName = map[tokenType]string{
+	T_UNKNOWN:             "T_UNKNOWN",
 	T_ERR:                 "T_ERR",
 	T_EOF:                 "T_EOF",
 	T_IDENTIFIER:          "T_IDENTIFIER",
@@ -89,7 +92,6 @@ type stateFn func(*lexer) stateFn
 
 // lexer holds the state of the scanner.
 type lexer struct {
-	name   string     // the name of the input; used only for error reports.
 	input  string     // the string being scanned.
 	state  stateFn    // the next lexing function to enter.
 	pos    int        // current position in the input.
